@@ -105,3 +105,9 @@ flippingCardView1.setOnClickListener(new View.OnClickListener() {
     }
 });
 ```
+
+## ✨ Watch the Magic Unfold: See FlippingCardView in Action! ✨
+<img src="https://github.com/user-attachments/assets/736dc8a9-8b81-4361-95f1-f682173a4ffb" width="260" height="430" alt="finalgif">
+
+
+
