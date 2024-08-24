@@ -2,16 +2,28 @@ package com.example.flippingcardlibrary;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.AnimationUtils;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.ScaleAnimation;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
+
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
+
 public class FlippingCardView extends ConstraintLayout {
 
     private CardView frontView;
@@ -21,7 +33,17 @@ public class FlippingCardView extends ConstraintLayout {
     private boolean isFlipped = false;
     private int flipDuration = 150; // Default flip duration
 
-    private int flipStyle = 0;  // 0 for normal, 1 for with elevation
+    public static final int FLIP_STYLE_ROTATION = 0;
+    public static final int FLIP_STYLE_FADE = 1;
+    public static final int FLIP_STYLE_ZOOM_IN_FLIP = 2;
+
+    public static final int FLIP_STYLE_SLIDE_RIGHT = 3;
+    public static final int FLIP_STYLE_SLIDE_LEFT = 4;
+    public static final int FLIP_STYLE_PENDULUM_SLIDE = 5;
+
+    private boolean slideRight = true; // To track slide direction
+
+    private int flipStyle = FLIP_STYLE_ROTATION;
 
     public FlippingCardView(Context context) {
         super(context);
@@ -50,14 +72,14 @@ public class FlippingCardView extends ConstraintLayout {
         addView(backView);
 
         backView.setVisibility(GONE);
-        backView.setRotationY(-90);
+
 
         if (attrs != null) {
             TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.FlippingCardView);
 
             float cardRadius = a.getDimension(R.styleable.FlippingCardView_cardRadius, 0);
             flipDuration = a.getInt(R.styleable.FlippingCardView_flipDuration, 150);
-            flipStyle = a.getInt(R.styleable.FlippingCardView_flipStyle, 0);
+            flipStyle = a.getInt(R.styleable.FlippingCardView_flipStyle, FLIP_STYLE_ROTATION);
 
             frontView.setRadius(cardRadius);
             backView.setRadius(cardRadius);
@@ -76,32 +98,34 @@ public class FlippingCardView extends ConstraintLayout {
     }
 
     public void flipCard() {
-        if (isFlipped) {
-            if (flipStyle == 0) {
-                flipToFront();
-            } else {
-                performFlipAnimationWithElevation(backView, frontView);
-            }
-        } else {
-            if (flipStyle == 0) {
-                flipToBack();
-            } else {
-                performFlipAnimationWithElevation(frontView, backView);
-            }
+        switch (flipStyle) {
+            case FLIP_STYLE_ROTATION:
+                performFlipAnimation(isFlipped ? backView : frontView, isFlipped ? frontView : backView);
+                break;
+            case FLIP_STYLE_FADE:
+                performFadeAnimation(isFlipped ? backView : frontView, isFlipped ? frontView : backView);
+                break;
+            case FLIP_STYLE_ZOOM_IN_FLIP:
+                performZoomInFlipAnimation(isFlipped ? backView : frontView, isFlipped ? frontView : backView);
+                break;
+            case FLIP_STYLE_SLIDE_RIGHT:
+                performSlideFromRightAnimation(isFlipped ? backView : frontView, isFlipped ? frontView : backView);
+                break;
+            case FLIP_STYLE_SLIDE_LEFT:
+                performSlideFromLeftAnimation(isFlipped ? backView : frontView, isFlipped ? frontView : backView);
+                break;
+            case FLIP_STYLE_PENDULUM_SLIDE:
+                performPendulumSlideAnimation(isFlipped ? backView : frontView, isFlipped ? frontView : backView);
+                break;
+            default:
+                // Handle other cases or provide a default behavior
+                break;
         }
         isFlipped = !isFlipped;
     }
 
     public void setFlipStyle(int style) {
-        this.flipStyle = style;  // 0 for normal, 1 for with elevation
-    }
-
-    private void flipToFront() {
-        performFlipAnimation(backView, frontView);
-    }
-
-    private void flipToBack() {
-        performFlipAnimation(frontView, backView);
+        this.flipStyle = style;
     }
 
     private void performFlipAnimation(final CardView fromView, final CardView toView) {
@@ -116,43 +140,196 @@ public class FlippingCardView extends ConstraintLayout {
         });
     }
 
+    private void performFadeAnimation(final CardView fromView, final CardView toView) {
+        // Prepare the toView before animation starts
+        toView.setAlpha(0f);
+        toView.setVisibility(VISIBLE);
 
+        // Fade out animation for fromView
+        ObjectAnimator fadeOutFrom = ObjectAnimator.ofFloat(fromView, "alpha", 1f, 0f);
+        fadeOutFrom.setDuration(flipDuration );
 
-    private void performFlipAnimationWithElevation(final CardView fromView, final CardView toView) {
-        // Set initial elevation for the view that is about to flip
-        updateElevation(fromView, 10); // Raise the card a bit before flipping
+        // Fade in animation for toView
+        ObjectAnimator fadeInTo = ObjectAnimator.ofFloat(toView, "alpha", 0f, 1f);
+        fadeInTo.setDuration(flipDuration );
 
-        fromView.animate().rotationY(90).setDuration(flipDuration / 2)
-                .setListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        fromView.setVisibility(GONE);
-                        toView.setVisibility(VISIBLE);
-                        toView.setRotationY(-90);
+        final AnimatorSet animationSet = new AnimatorSet();
 
-                        // Start lowering the elevation as the card starts to face up
-                        animateElevation(toView, 10, 0);
+        animationSet.play(fadeInTo).after(fadeOutFrom);
 
-                        toView.animate().rotationY(0).setDuration(flipDuration / 2)
-                                .setListener(new AnimatorListenerAdapter() {
-                                    @Override
-                                    public void onAnimationEnd(Animator animation) {
-                                        // Reset or adjust elevation if necessary after animation
-                                        updateElevation(toView, 5); // Example of setting it lower than initial
-                                    }
-                                });
-                    }
-                });
+        animationSet.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                // Ensure both views are visible at the start of the animation
+                fromView.setVisibility(VISIBLE);
+                toView.setVisibility(VISIBLE);
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                // Hide the fromView when the animation is complete
+                fromView.setVisibility(GONE);
+            }
+        });
+
+        animationSet.start();
     }
 
-    private void updateElevation(View view, float elevation) {
-        view.setElevation(elevation);
+    private void performZoomInFlipAnimation(final CardView fromView, final CardView toView) {
+        // Create AnimationSet for zoom out
+        AnimationSet zoomOutSet = new AnimationSet(true);
+        ScaleAnimation zoomOut = new ScaleAnimation(1f, 0.5f, 1f, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        AlphaAnimation fadeOut = new AlphaAnimation(1f, 0f);
+
+        zoomOut.setDuration(flipDuration / 2);
+        fadeOut.setDuration(flipDuration / 2);
+
+        zoomOutSet.addAnimation(zoomOut);
+        zoomOutSet.addAnimation(fadeOut);
+
+        // Create AnimationSet for zoom in
+        AnimationSet zoomInSet = new AnimationSet(true);
+        ScaleAnimation zoomIn = new ScaleAnimation(0.5f, 1f, 0.5f, 1f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        AlphaAnimation fadeIn = new AlphaAnimation(0f, 1f);
+
+        zoomIn.setDuration(flipDuration / 2);
+        fadeIn.setDuration(flipDuration / 2);
+
+        zoomInSet.addAnimation(zoomIn);
+        zoomInSet.addAnimation(fadeIn);
+
+        // Set up the animation listener
+        zoomOutSet.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                // No action needed here
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                fromView.setVisibility(GONE); // Hide the fromView after zoom out
+                toView.setVisibility(VISIBLE); // Show the toView
+
+                // Start zoom in animation on the toView
+                toView.startAnimation(zoomInSet);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+                // No action needed here
+            }
+        });
+
+        // Start zoom out animation on the fromView
+        fromView.startAnimation(zoomOutSet);
     }
 
-    private void animateElevation(final View view, float startElevation, float endElevation) {
-        ObjectAnimator elevationAnimator = ObjectAnimator.ofFloat(view, "elevation", startElevation, endElevation);
-        elevationAnimator.setDuration(flipDuration);
-        elevationAnimator.start();
+    private void performSlideFromRightAnimation(final CardView fromView, final CardView toView) {
+        AnimatorSet animatorSet = new AnimatorSet();
+
+        // Slide out the current view to the left
+        ObjectAnimator slideOutFrom = ObjectAnimator.ofFloat(fromView, "translationX", 0f, -getWidth());
+
+        // Prepare the new view
+        toView.setVisibility(VISIBLE);
+        toView.setTranslationX(getWidth());
+
+        // Slide in the new view from the right
+        ObjectAnimator slideInTo = ObjectAnimator.ofFloat(toView, "translationX", getWidth(), 0f);
+
+        // Set up the animation sequence
+        animatorSet.play(slideOutFrom).with(slideInTo);
+
+        // Set the duration
+        animatorSet.setDuration(flipDuration);
+
+        // Add a listener to handle visibility
+        animatorSet.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                fromView.setVisibility(GONE);
+                fromView.setTranslationX(0f);
+            }
+        });
+
+        // Start the animation
+        animatorSet.start();
+    }
+
+    private void performSlideFromLeftAnimation(final CardView fromView, final CardView toView) {
+        AnimatorSet animatorSet = new AnimatorSet();
+
+        // Slide out the current view to the right
+        ObjectAnimator slideOutFrom = ObjectAnimator.ofFloat(fromView, "translationX", 0f, getWidth());
+
+        // Prepare the new view
+        toView.setVisibility(VISIBLE);
+        toView.setTranslationX(-getWidth());
+
+        // Slide in the new view from the left
+        ObjectAnimator slideInTo = ObjectAnimator.ofFloat(toView, "translationX", -getWidth(), 0f);
+
+        // Set up the animation sequence
+        animatorSet.play(slideOutFrom).with(slideInTo);
+
+        // Set the duration
+        animatorSet.setDuration(flipDuration);
+
+        // Add a listener to handle visibility
+        animatorSet.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                fromView.setVisibility(GONE);
+                fromView.setTranslationX(0f);
+            }
+        });
+
+        // Start the animation
+        animatorSet.start();
+    }
+
+    private void performPendulumSlideAnimation(final CardView fromView, final CardView toView) {
+        AnimatorSet animatorSet = new AnimatorSet();
+
+        float slideDistance = getWidth();
+
+        // Determine slide directions based on the slideRight flag
+        float fromViewStart = 0f;
+        float fromViewEnd = slideRight ? -slideDistance : slideDistance;
+        float toViewStart = slideRight ? slideDistance : -slideDistance;
+        float toViewEnd = 0f;
+
+        // Slide out the current view
+        ObjectAnimator slideOutFrom = ObjectAnimator.ofFloat(fromView, "translationX", fromViewStart, fromViewEnd);
+
+        // Prepare the new view
+        toView.setVisibility(VISIBLE);
+        toView.setTranslationX(toViewStart);
+
+        // Slide in the new view
+        ObjectAnimator slideInTo = ObjectAnimator.ofFloat(toView, "translationX", toViewStart, toViewEnd);
+
+        // Set up the animation sequence
+        animatorSet.play(slideOutFrom).with(slideInTo);
+
+        // Set the duration
+        animatorSet.setDuration(flipDuration);
+
+        // Add a listener to handle visibility and reset positions
+        animatorSet.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                fromView.setVisibility(GONE);
+                fromView.setTranslationX(0f);
+                toView.setTranslationX(0f);
+
+                // Toggle the slide direction for next time
+                slideRight = !slideRight;
+            }
+        });
+
+        // Start the animation
+        animatorSet.start();
     }
 
 

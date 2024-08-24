@@ -10,8 +10,12 @@
         <attr name="frontImage" format="reference"/>
         <attr name="backImage" format="reference"/>
         <attr name="flipStyle" format="enum">
-            <enum name="normal" value="0"/>
-            <enum name="withElevation" value="1"/>
+            <enum name="rotation" value="0"/>
+            <enum name="fade" value="1"/>
+            <enum name="zoomInFlip" value="2"/>
+            <enum name="slideLeft" value="3"/>
+            <enum name="slideRight" value="4"/>
+            <enum name="PendulumSlide" value="5"/>
         </attr>
     </declare-styleable>
 </resources>
