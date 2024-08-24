@@ -54,7 +54,7 @@ dependencies {
 - **slideRight**: The card slides to the right and flips to reveal the other side.
 - **slideLeft**: The card slides to the left and flips to reveal the other side.
 - **pendulumSlide**: The card swings like a pendulum before flipping.
-- 
+  
 ### `Example`
 - `app:flipStyle="rotation"`
 - `app:flipStyle="fade"`
