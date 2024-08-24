@@ -1,0 +1,215 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity"
+    android:background="@drawable/librarybackground">
+
+
+    <com.google.android.material.textview.MaterialTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Flipping Card View Library"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        android:textColor="#314f79">
+
+    </com.google.android.material.textview.MaterialTextView>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Made by Noam Ben Binyamin"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="60dp"
+        android:textSize="18sp"
+        android:textColor="#6482AD">
+
+    </com.google.android.material.textview.MaterialTextView>
+
+
+
+ <GridLayout
+     android:layout_width="wrap_content"
+     android:layout_height="wrap_content"
+     android:rowCount="3"
+     android:columnCount="2"
+     android:layout_centerHorizontal="true"
+     android:layout_marginTop="110dp">
+
+
+
+<LinearLayout
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="5dp">
+
+    <com.google.android.material.textview.MaterialTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Rotation"
+        android:textStyle="bold"
+        android:layout_gravity="center_horizontal"
+        android:textSize="20sp"
+        android:textColor="#314f79">
+
+    </com.google.android.material.textview.MaterialTextView>
+        <com.example.flippingcardlibrary.FlippingCardView
+            android:id="@+id/flippingCardView1"
+            android:layout_width="120dp"
+            android:layout_height="170dp"
+            app:cardRadius="20dp"
+            app:frontImage="@drawable/backofcard2"
+            app:backImage="@drawable/dog"
+            app:flipStyle="rotation"
+            android:layout_marginVertical="5dp"
+            android:layout_marginHorizontal="20dp"/>
+</LinearLayout>
+
+
+     <LinearLayout
+         android:orientation="vertical"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_marginTop="5dp">
+
+     <com.google.android.material.textview.MaterialTextView
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:text="Fade"
+         android:textStyle="bold"
+
+         android:layout_gravity="center_horizontal"
+         android:textSize="20sp"
+         android:textColor="#314f79"/>
+        <com.example.flippingcardlibrary.FlippingCardView
+            android:id="@+id/flippingCardView2"
+            android:layout_width="120dp"
+            android:layout_height="170dp"
+            app:cardRadius="20dp"
+            app:frontImage="@drawable/backofcard2"
+            app:backImage="@drawable/dog"
+            app:flipStyle="fade"
+            android:layout_marginVertical="5dp"
+            android:layout_marginHorizontal="20dp"/>
+
+     </LinearLayout>
+
+     <LinearLayout
+         android:orientation="vertical"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_marginTop="5dp">
+
+     <com.google.android.material.textview.MaterialTextView
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:text="Zoom"
+         android:textStyle="bold"
+
+         android:layout_gravity="center_horizontal"
+         android:textSize="20sp"
+         android:textColor="#314f79"/>
+
+        <com.example.flippingcardlibrary.FlippingCardView
+            android:id="@+id/flippingCardView3"
+            android:layout_width="120dp"
+            android:layout_height="170dp"
+            app:cardRadius="20dp"
+            app:frontImage="@drawable/backofcard2"
+            app:backImage="@drawable/dog"
+            app:flipStyle="zoomInFlip"
+            android:layout_marginVertical="5dp"
+            android:layout_marginHorizontal="20dp"/>
+
+
+     </LinearLayout>
+
+     <LinearLayout
+         android:orientation="vertical"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_marginTop="5dp">
+
+     <com.google.android.material.textview.MaterialTextView
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:text="Slide Right"
+         android:textStyle="bold"
+         android:layout_gravity="center_horizontal"
+         android:textSize="20sp"
+         android:textColor="#314f79"/>
+    <com.example.flippingcardlibrary.FlippingCardView
+        android:id="@+id/flippingCardView4"
+        android:layout_width="120dp"
+        android:layout_height="170dp"
+        app:cardRadius="20dp"
+        app:frontImage="@drawable/backofcard2"
+        app:backImage="@drawable/dog"
+        app:flipStyle="slideRight"
+        android:layout_marginVertical="5dp"
+        android:layout_marginHorizontal="20dp"
+        />
+     </LinearLayout>
+
+
+     <LinearLayout
+         android:orientation="vertical"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_marginTop="5dp">
+
+     <com.google.android.material.textview.MaterialTextView
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:text="Slide Left"
+         android:textStyle="bold"
+         android:layout_gravity="center_horizontal"
+         android:textSize="20sp"
+         android:textColor="#314f79"/>
+    <com.example.flippingcardlibrary.FlippingCardView
+        android:id="@+id/flippingCardView5"
+        android:layout_width="120dp"
+        android:layout_height="170dp"
+        app:cardRadius="20dp"
+        app:frontImage="@drawable/backofcard2"
+        app:backImage="@drawable/dog"
+        app:flipStyle="slideLeft"
+        android:layout_marginVertical="5dp"
+        android:layout_marginHorizontal="20dp"
+      />
+     </LinearLayout>
+
+     <LinearLayout
+         android:orientation="vertical"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_marginTop="5dp">
+
+     <com.google.android.material.textview.MaterialTextView
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:text="Pendulum"
+         android:textStyle="bold"
+         android:layout_gravity="center_horizontal"
+         android:textSize="20sp"
+         android:textColor="#314f79"/>
+        <com.example.flippingcardlibrary.FlippingCardView
+            android:id="@+id/flippingCardView6"
+            android:layout_width="120dp"
+            android:layout_height="170dp"
+            app:cardRadius="20dp"
+            app:frontImage="@drawable/backofcard2"
+            app:backImage="@drawable/dog"
+            app:flipStyle="PendulumSlide"
+            android:layout_marginVertical="5dp"
+            android:layout_marginHorizontal="20dp"/>
+
+     </LinearLayout>
+ </GridLayout>
+</RelativeLayout>
